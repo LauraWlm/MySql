@@ -9,7 +9,7 @@ catch (Exception $e)
 }
 
 
-$query = 'SELECT * FROM météo';
+$query = 'SELECT * FROM `météo`';
 $stmt = $db->query($query);
 $result = $stmt->fetchAll();
 
@@ -24,24 +24,27 @@ if (count($result) > 0) {
 }
 
 $db = null;
-
 ?>
+
 <form method="POST" action="">
  <label for="ville"> Ville: </label>
- <input type="text" id="ville" name="ville">
+ <input type="text" id="ville" name="ville" required>
 
  <label for="haut">Haut:</label>
-<input type="text" id="haut" name="haut">
+<input type="text" id="haut" name="haut" required>
 
 <label for="bas">Bas:</label>
-<input type="text" id="bas" name="bas">
+<input type="text" id="bas" name="bas" required>
 
 <input type="submit"  value="Ajouter">
-<input type="submit" value="Supprimer">
 
+</form>
+<form method="POST" action="delete.php">
+<input type="submit" name="supprimer" value="Supprimer">
+</form>
 
 <?php
-
+if(isset($_POST['ville']) && isset($_POST['haut']) && isset($_POST['bas'])){
 
 $ville = $_POST['ville'];
 $haut = $_POST['haut'];
@@ -62,4 +65,21 @@ $stmt->bindValue(':bas', $bas);
 $stmt->execute();
 
 $db = null;
+}
+if(isset($_POST['delete_submit'])){
+    if (isset($_POST['delete'])) {
+        $delete = $_POST['delete'];
+        try {
+            $db = new PDO('mysql:host=localhost;dbname=weatherapp;charset=utf8', 'root', '');
+            $query = "DELETE FROM meteo WHERE id IN (".implode( $delete).")";
+            $stmt = $db->prepare($query);
+            $stmt->execute();
+            $db = null;
+            } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+            }
+            }
+            }
 
+
+?>
