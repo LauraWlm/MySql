@@ -18,7 +18,7 @@ if (count($result) > 0) {
 
     foreach ($result as $row) {
         echo "<tr><td>" . $row["ville"]. "</td><td>" . $row["haut"] . "</td><td>" . $row["bas"] . "</td>";
-        echo "<td><input type='checkbox' name='delete[]' value='" . $row['id'] . "'></td></tr>";
+        echo "<td><input type='checkbox' name='delete[]' value='" . $row['name'] . "'></td></tr>";
     }
     echo "Aucun résultat";
 }
@@ -39,9 +39,7 @@ $db = null;
 <input type="submit"  value="Ajouter">
 
 </form>
-<form method="POST" action="delete.php">
-<input type="submit" name="supprimer" value="Supprimer">
-</form>
+
 
 <?php
 if(isset($_POST['ville']) && isset($_POST['haut']) && isset($_POST['bas'])){
@@ -65,21 +63,20 @@ $stmt->bindValue(':bas', $bas);
 $stmt->execute();
 
 $db = null;
-}
-if(isset($_POST['delete_submit'])){
-    if (isset($_POST['delete'])) {
-        $delete = $_POST['delete'];
-        try {
-            $db = new PDO('mysql:host=localhost;dbname=weatherapp;charset=utf8', 'root', '');
-            $query = "DELETE FROM meteo WHERE id IN (".implode( $delete).")";
-            $stmt = $db->prepare($query);
-            $stmt->execute();
-            $db = null;
-            } catch (Exception $e) {
-            die('Erreur : ' . $e->getMessage());
-            }
-            }
-            }
+?>
+<form method="POST" action="">
+<input type="submit" name="delete_submit" value="Supprimer">
+</form>
 
+<?php
+}
+if (isset($_POST['delete_submit'])) {
+    $delete = $_POST[$row['name']];
+    for($i=0;$i<sizeof($delete);$i++)
+{
+    $sql = "DELETE FROM météo WHERE name=$delete[$i]";
+    $req = mysql_query($sql) or die('Erreur SQL !<br>'.$sql.'<br>'.mysql_error());
+    }
+}
 
 ?>
